@@ -1,6 +1,10 @@
+const express = require('express')
+const app = express()
+
 var AWS = require('aws-sdk');
 AWS.config.region = "us-east-1";
 var qldb = new AWS.QLDB;
+app.get('/lcs', function (req, res) {
 //var ledger_name1="TelecomLedger";
 var params = {
   MaxResults: "10",
@@ -9,7 +13,7 @@ var params = {
 qldb.listLedgers(params, function (err, data) {
   if (err) console.log(err, err.stack); // an error occurred
   else {
-    console.log(data);
+    //console.log(data);
 
 
     //var u=JSON.stringify(data);
@@ -32,7 +36,7 @@ qldb.listLedgers(params, function (err, data) {
       if (data.Ledgers[i].Name === ledger_name1) {
         var ledger_name = data.Ledgers[i].Name;
         //console.log(""+ledger_name1+"found");
-             console.log("founded : "+data.Ledgers[i].Name);
+            // console.log("founded : "+data.Ledgers[i].Name);
       }
       //console.log(ledger_name);
 
@@ -100,9 +104,8 @@ qldb.listLedgers(params, function (err, data) {
       else {
         //var s=data.toString();
         //var st= JSON.parse(s);
-        console.log("I am here")
+         console.log("I am here")
         //console.log(data.Block.IonText);
-        // http://amzn.github.io/ion-docs/
         var iontojson = require("ion-to-json");
         var ion = require("ion-js");
         var unformatted = ion.makeReader(data.Block.IonText);
@@ -111,11 +114,24 @@ qldb.listLedgers(params, function (err, data) {
         //console.log(json);
         //var strjsn=JSON.stringify(json)
 
-
+      let dummyArr = []
        for(var i=0;i<json.revisions.length;i++)
        {
-          console.log(json.revisions[i].data);
-       } 
+         //let count="";
+        //count=count+json.revisions[i].data;
+        dummyArr.push(json.revisions[i].data)
+       }
+
+        res.send(JSON.stringify(dummyArr)); 
+
+
+
+
+       //res.send(json.revisions[i].data);          
+
+       //res.send(count);
+       
+        
        // console.log(json.revisions[0].data);
         // var ionData = JSON.stringify(data);
         // var ionReader = ionJs.makeReader(ionData);
@@ -264,7 +280,11 @@ qldb.listLedgers(params, function (err, data) {
     //console.log(arr);
   }
 });
+})
 
+//})
+
+app.listen(8081)
 /*var str=JSON.stringify(data);
 console.log(str);
 var s=str.toString();
